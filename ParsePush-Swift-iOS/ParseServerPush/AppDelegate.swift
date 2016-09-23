@@ -7,18 +7,54 @@
 //
 
 import UIKit
+import Parse
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
+    
     var window: UIWindow?
-
-
+    
+    
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+        
+        // Register with Parse Server
+        let configuration = ParseClientConfiguration {
+            $0.applicationId = "***"
+            $0.clientKey = ""
+            $0.server = "http://***.***.elasticbeanstalk.com/parse"
+        }
+        Parse.initializeWithConfiguration(configuration)
+        
+        // Register for remote notifications
+        let userNotificationTypes: UIUserNotificationType = [.Alert, .Badge, .Sound]
+        let settings = UIUserNotificationSettings(forTypes: userNotificationTypes, categories: nil)
+        application.registerUserNotificationSettings(settings)
+        application.registerForRemoteNotifications()
+        
         return true
+        
     }
-
+    
+    // Save currentInstallation object
+    func application(application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: NSData) {
+        if let installation = PFInstallation.currentInstallation() {
+            installation.setDeviceTokenFromData(deviceToken)
+            installation.channels = ["global"]
+            installation.saveInBackground()
+            print("Saved installation")
+        } else {
+            print("Failed to save installation")
+        }
+    }
+    
+    // Received remote notification when the app is on the screen. Show a simple alert message using PFPush.handlePush()
+    func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject]) {
+        PFPush.handlePush(userInfo)
+        print("## Received a new push notification:")
+        print(userInfo)
+    }
+    
     func applicationWillResignActive(application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
