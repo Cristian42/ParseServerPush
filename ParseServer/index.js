@@ -20,6 +20,14 @@ var api = new ParseServer({
   serverURL: process.env.SERVER_URL || 'http://localhost:1337/parse',  // Don't forget to change to https if needed
   liveQuery: {
     classNames: ["Posts", "Comments"] // List of classes to support for query subscriptions
+  },
+  push: {
+   ios: {
+     pfx: __dirname + '/cert/ParsePush.p12',
+     passphrase: '', // optional password to your p12/PFX
+     bundleId: process.env.BUNDLE_ID || '',
+     production: process.env.PUSH_PRODUCTION || true
+   }
   }
 });
 // Client-keys like the javascript key or the .NET key are not necessary with parse-server
