@@ -1,0 +1,6 @@
+framework module Pods_ParseServerPushUITests {
+  umbrella header "Pods-ParseServerPushUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}
